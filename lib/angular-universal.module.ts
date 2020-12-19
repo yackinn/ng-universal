@@ -42,7 +42,7 @@ export class AngularUniversalModule implements OnModuleInit {
         {
           provide: ANGULAR_UNIVERSAL_CACHE,
           ...((options?.cache as CacheOptions)?.storage
-          || { useValue: new InMemoryCacheStorage() })
+            || { useValue: new InMemoryCacheStorage() })
         }
       ]
     };
@@ -57,12 +57,12 @@ export class AngularUniversalModule implements OnModuleInit {
       return;
     }
     const app = httpAdapter.getInstance();
-    app.get(this.ngOptions.renderPath, (req, res) =>
+    app.get(this.ngOptions.renderPath, (req, res) => {
       res.render(this.ngOptions.templatePath, {
         req,
         res,
         providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }]
-      })
-    );
+      });
+    });
   }
 }

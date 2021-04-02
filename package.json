@@ -9,7 +9,6 @@
     "build:lib": "tsc -p tsconfig.json",
     "build:dev": "npm run prebuild && tsc -p tsconfig.json --watch",
     "build:schematics": "tsc -p tsconfig.schematics.json",
-    "precommit": "lint-staged",
     "prepublish:npm": "npm run build",
     "publish:npm": "npm publish --access public",
     "prepublish:next": "npm run build",

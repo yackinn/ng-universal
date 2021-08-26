@@ -44,7 +44,7 @@ export function setupUniversal(
       }
 
       if (cacheOptions.isEnabled && cacheKey) {
-        ngStorageProvider.set(cacheKey, html, cacheOptions.expiresIn);
+        html = ngStorageProvider.set(cacheKey, html, cacheOptions.expiresIn) || html;
       }
       callback(null, html);
     });

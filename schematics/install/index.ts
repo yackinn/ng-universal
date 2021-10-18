@@ -14,14 +14,13 @@ import {
   url
 } from '@angular-devkit/schematics';
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
-
+import { getOutputPath } from '@nguniversal/express-engine/schematics/utils';
 import {
   addPackageJsonDependency,
   NodeDependencyType
 } from '@schematics/angular/utility/dependencies';
 import { updateWorkspace } from '@schematics/angular/utility/workspace';
 import { Schema as UniversalOptions } from './schema';
-import { getOutputPath } from '@nguniversal/express-engine/schematics/utils';
 
 const SERVER_DIST = 'dist/server';
 
@@ -65,7 +64,7 @@ function addDependenciesAndScripts(): Rule {
     addPackageJsonDependency(host, {
       type: NodeDependencyType.Default,
       name: '@nguniversal/express-engine',
-      version: '^10.0.0'
+      version: '^12.0.0'
     });
 
     const pkgPath = '/package.json';
@@ -86,7 +85,7 @@ function addDependenciesAndScripts(): Rule {
 function updateWorkspaceConfigRule(options: UniversalOptions): Rule {
   return () => {
     return updateWorkspace(workspace => {
-      const projectName = options.clientProject;
+      const projectName = options.project || <string>workspace.extensions.defaultProject;
       const project = workspace.projects.get(projectName);
       if (!project) {
         return;
@@ -115,7 +114,7 @@ function addFiles(options: UniversalOptions): Rule {
   return async (tree: Tree, _context: SchematicContext) => {
     const browserDistDirectory = await getOutputPath(
       tree,
-      options.clientProject,
+      options.project,
       'build'
     );
     const rule = mergeWith(
@@ -126,7 +125,7 @@ function addFiles(options: UniversalOptions): Rule {
           stripTsExtension: (s: string) => s.replace(/\.ts$/, ''),
           getBrowserDistDirectory: () => browserDistDirectory,
           getServerDistDirectory: () => SERVER_DIST,
-          getClientProjectName: () => options.clientProject
+          getClientProjectName: () => options.project
         }),
         forEach((fileEntry: FileEntry) => {
           if (tree.exists(fileEntry.path)) {

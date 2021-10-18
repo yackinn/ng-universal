@@ -1,60 +1,68 @@
 {
-    "name"            : "nestjs",
-    "version"         : "4.3.2",
-    "description"     : "Nest - modern, fast, powerful node.js web framework (@ng-universal)",
-    "author"          : "Kamil Mysliwiec",
-    "license"         : "MIT",
-    "scripts"         : {
-        "build"           : "npm run build:lib && npm run build:schematics",
-        "build:lib"       : "tsc -p tsconfig.json",
-        "build:dev"       : "npm run prebuild && tsc -p tsconfig.json --watch",
-        "build:schematics": "tsc -p tsconfig.schematics.json",
-        "prepublish:npm"  : "npm run build",
-        "publish:npm"     : "npm publish --access public",
-        "prepublish:next" : "npm run build",
-        "publish:next"    : "npm publish --access public --tag next",
-        "postbuild"       : "cp ./lib/package.json ./dist",
-        "prebuild"        : "rm -rf dist"
-    },
-    "peerDependencies": {
-        "@angular/common"            : "12.0.3",
-        "@angular/platform-browser"  : "12.0.3",
-        "@nestjs/common"             : "^7.0.0",
-        "@nestjs/core"               : "^7.0.0",
-        "@nestjs/platform-express"   : "^7.0.0",
-        "@nguniversal/common"        : "12.0.1",
-        "@nguniversal/express-engine": "12.0.1",
-        "express"                    : "^4.17.1",
-        "zone.js"                    : "^0.10.0 || ^0.11.0"
-    },
-    "devDependencies" : {
-        "@commitlint/cli"           : "12.1.1",
-        "@commitlint/config-angular": "12.1.1",
-        "@angular/common"           : "12.0.3",
-        "@angular/platform-browser" : "12.0.3",
-        "@nestjs/common"            : "7.6.15",
-        "@nestjs/core"              : "7.6.15",
-        "@types/memory-cache"       : "0.2.1",
-        "@types/node"               : "13.13.48",
-        "express"                   : "4.17.1",
-        "husky"                     : "6.0.0",
-        "lint-staged"               : "10.5.4",
-        "prettier"                  : "2.2.1",
-        "ts-morph"                  : "10.0.2",
-        "typescript"                : "4.2.3",
-        "zone.js"                   : "0.11.4"
-    },
-    "dependencies"    : {
-        "@angular-devkit/schematics" : "11.2.4",
-        "@schematics/angular"        : "11.2.4",
-        "@nguniversal/common"        : "12.0.1",
-        "@nguniversal/express-engine": "12.0.1",
-        "memory-cache"               : "0.2.0"
-    },
-    "schematics"      : "./schematics/collection.json",
-    "lint-staged"     : {
-        "*.ts": [
-            "prettier --write"
-        ]
+  "name": "@nestjs/ng-universal",
+  "version": "5.0.2",
+  "description": "Nest - modern, fast, powerful node.js web framework (@ng-universal)",
+  "author": "Kamil Mysliwiec",
+  "license": "MIT",
+  "scripts": {
+    "test:schematics": "jest --run-in-band --silent",
+    "build": "npm run build:lib && npm run build:schematics",
+    "build:lib": "tsc -p tsconfig.json",
+    "build:schematics": "tsc -p tsconfig.schematics.json",
+    "precommit": "lint-staged",
+    "prepublish:npm": "npm run build",
+    "publish:npm": "npm publish --access public",
+    "prepublish:next": "npm run build",
+    "publish:next": "npm publish --access public --tag next"
+  },
+  "peerDependencies": {
+    "@angular/common": "^12.0.0",
+    "@angular/platform-server": "^12.0.0",
+    "@nestjs/common": "^8.0.0",
+    "@nestjs/core": "^8.0.0",
+    "@nestjs/platform-express": "^8.0.0",
+    "@nguniversal/common": "^12.0.0",
+    "@nguniversal/express-engine": "^12.0.0",
+    "express": "^4.17.1",
+    "zone.js": "^0.11.0"
+  },
+  "devDependencies": {
+    "@angular/common": "12.2.10",
+    "@angular/platform-server": "12.2.10",
+    "@commitlint/cli": "13.2.1",
+    "@commitlint/config-angular": "13.2.0",
+    "@nestjs/common": "8.1.1",
+    "@nestjs/core": "8.1.1",
+    "@types/jest": "27.0.2",
+    "@types/memory-cache": "0.2.1",
+    "@types/node": "14.17.27",
+    "express": "4.17.1",
+    "husky": "7.0.2",
+    "jest": "27.3.0",
+    "lint-staged": "11.2.3",
+    "prettier": "2.4.1",
+    "ts-jest": "27.0.7",
+    "ts-morph": "12.0.0",
+    "typescript": "4.4.4",
+    "zone.js": "0.11.4"
+  },
+  "dependencies": {
+    "@angular-devkit/schematics": "12.2.10",
+    "@schematics/angular": "12.2.10",
+    "@nguniversal/common": "12.1.1",
+    "@nguniversal/express-engine": "12.1.1",
+    "memory-cache": "0.2.0"
+  },
+  "schematics": "./schematics/collection.json",
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -c .commitlintrc.json -E HUSKY_GIT_PARAMS"
     }
+  }
 }

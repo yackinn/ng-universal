@@ -70,16 +70,17 @@ export class ApplicationModule {}
 
 The `forRoot()` method takes an options object with a few useful properties.
 
-| Property         | Type                | Description                                                                |
-| ---------------- | ------------------- | -------------------------------------------------------------------------- |
-| `viewsPath`      | string              | The directory where the module should look for client bundle (Angular app) |
-| `bootstrap`      | Function            | Angular server module reference (`AppServerModule`).                       |
-| `templatePath`   | string?             | Path to index file (default: `{viewsPaths}/index.html`)                    |
-| `rootStaticPath` | string?             | Static files root directory (default: `*.*`)                               |
-| `renderPath`     | string?             | Path to render Angular app (default: `*`)                                  |
-| `extraProviders` | StaticProvider[]?   | The platform level providers for the current render request                |
-| `cache`          | boolean? \| object? | Cache options, description below (default: `true`)                         |
-| `errorHandler`   | Function?           | Callback to be called in case of a rendering error                         |
+| Property            | Type                | Description                                                                |
+| ------------------- | ------------------- | -------------------------------------------------------------------------- |
+| `viewsPath`         | string              | The directory where the module should look for client bundle (Angular app) |
+| `bootstrap`         | Function            | Angular server module reference (`AppServerModule`).                       |
+| `templatePath`      | string?             | Path to index file (default: `{viewsPaths}/index.html`)                    |
+| `rootStaticPath`    | string?             | Static files root directory (default: `*.*`)                               |
+| `renderPath`        | string?             | Path to render Angular app (default: `*`)                                  |
+| `extraProviders`    | StaticProvider[]?   | The platform level providers for the current render request                |
+| `inlineCriticalCss` | boolean?            | Reduce render blocking requests by inlining critical CSS. (default: true)  |
+| `cache`             | boolean? \| object? | Cache options, description below (default: `true`)                         |
+| `errorHandler`      | Function?           | Callback to be called in case of a rendering error                         |
 
 ### Cache
 
@@ -144,6 +145,73 @@ export class NotFoundComponent {
     }
   }
 }
+```
+
+## Custom Webpack
+
+In some situations, it may be required to customize the `webpack` build while using `@nestjs/ng-universal`, especially when additional dependencies are included (that rely on native Node.js code).
+
+To add a customizable `webpack` config to your project, it is recommended to install [@angular-builders/custom-webpack](https://www.npmjs.com/package/@angular-builders/custom-webpack) in the project and to set your builders appropriately.
+
+### Example Custom Webpack
+```typescript
+// webpack.config.ts
+import { Configuration, IgnorePlugin } from 'webpack'
+import {
+  CustomWebpackBrowserSchema,
+  TargetOptions
+} from '@angular-builders/custom-webpack'
+import nodeExternals from 'webpack-node-externals'
+
+export default (
+  config: Configuration
+  _options: CustomWebpackBrowserSchema,
+  targetOptions: TargetOptions
+) => {
+  if (targetOptions.target === 'server') {
+    config.resolve?.extensions?.push('.mjs', '.graphql', '.gql')
+
+    config.module?.rules?.push({
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: 'javascript/auto'
+    });
+
+    config.externalsPresets = { node: true }
+
+    (config.externals as Array<any>).push(
+      nodeExternals({ allowlist: [/^(?!(livereload|concurrently|fsevents)).*/]})
+    );
+
+    config.plugins?.push(
+      new IgnorePlugin({
+        checkResource: (resource: string) => {
+          const lazyImports = [
+            '@nestjs/microservices',
+            '@nestjs/microservices/microservices-module',
+            '@nestjs/websockets/socket-module',
+            'cache-manager',
+            'class-validator',
+            'class-transform',
+          ];
+
+          if (!lazyImpots.includes(resource)) {
+            return false;
+          }
+
+          try {
+            require.resolve(resource)
+          } catch (_err: any) {
+            return true;
+          }
+          return false;
+        }
+      })
+    );
+  }
+  return config;
+};
+
 ```
 
 ## Support

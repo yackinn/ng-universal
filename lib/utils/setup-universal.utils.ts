@@ -18,8 +18,7 @@ export function setupUniversal(
     if (cacheOptions.isEnabled) {
       const cacheKeyGenerator = cacheOptions.keyGenerator;
       cacheKey                = cacheKeyGenerator.generateCacheKey(options.req);
-      // todo add request to get method parameters
-      const cacheHtml         = await ngStorageProvider.get(cacheKey);
+      const cacheHtml         = await ngStorageProvider.get(cacheKey, options.req);
       if (cacheHtml) {
         return callback(null, cacheHtml);
       }

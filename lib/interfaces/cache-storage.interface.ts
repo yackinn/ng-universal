@@ -1,5 +1,7 @@
+import { Request } from 'express';
+
 export interface CacheStorage {
   set(key: string, value: string, expiresIn: number): string | void;
 
-  get(key: string): Promise<string | null> | string | null;
+  get(key: string, request: Request): Promise<string | null> | string | null;
 }

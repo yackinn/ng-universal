@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+import 'zone.js/dist/zone-node';
 import { ngExpressEngine } from '@nguniversal/express-engine';
 import * as express from 'express';
 import { CacheKeyByOriginalUrlGenerator } from '../cache/cache-key-by-original-url.generator';
@@ -24,8 +26,18 @@ export function setupUniversal(
       }
     }
 
-    ngExpressEngine({
-      bootstrap: ngOptions.bootstrap,
+    let engine = ngExpressEngine;
+    let appSsrModule;
+    if (typeof ngOptions.bootstrap === 'function') {
+      const { AppSsrModule, ngExpressEngine } = await ngOptions.bootstrap();
+      appSsrModule                            = AppSsrModule;
+      if (ngExpressEngine) {
+        engine = ngExpressEngine;
+      }
+    }
+
+    engine({
+      bootstrap: appSsrModule || ngOptions.bootstrap,
       inlineCriticalCss: ngOptions.inlineCriticalCss,
       providers: [
         {

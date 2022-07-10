@@ -53,4 +53,8 @@ export interface AngularUniversalOptions {
    * Module to bootstrap
    */
   bootstrap: any;
+  /**
+   * Use a custom endpoint for Angular rendering
+   */
+  useCustomRenderEndpoint: boolean
 }

@@ -1,13 +1,13 @@
-import { APP_BASE_HREF } from '@angular/common';
-import { DynamicModule, Inject, Module, OnModuleInit } from '@nestjs/common';
-import { HttpAdapterHost } from '@nestjs/core';
-import { existsSync } from 'fs';
-import { join } from 'path';
+import { APP_BASE_HREF }                                      from '@angular/common';
+import { DynamicModule, Inject, Module, OnModuleInit }        from '@nestjs/common';
+import { HttpAdapterHost }                                    from '@nestjs/core';
+import { existsSync }                                         from 'fs';
+import { join }                                               from 'path';
 import 'reflect-metadata';
 import { ANGULAR_UNIVERSAL_CACHE, ANGULAR_UNIVERSAL_OPTIONS } from './angular-universal.constants';
-import { angularUniversalProviders } from './angular-universal.providers';
-import { AngularUniversalOptions, CacheOptions } from './interfaces/angular-universal-options.interface';
-import { InMemoryCacheStorage } from './cache/in-memory-cache.storage';
+import { angularUniversalProviders }                          from './angular-universal.providers';
+import { InMemoryCacheStorage }                               from './cache/in-memory-cache.storage';
+import { AngularUniversalOptions, CacheOptions }              from './interfaces/angular-universal-options.interface';
 
 @Module({
   providers: [...angularUniversalProviders]
@@ -49,6 +49,7 @@ export class AngularUniversalModule implements OnModuleInit {
   }
 
   async onModuleInit() {
+    if (this.ngOptions.useCustomRenderEndpoint) return;
     if (!this.httpAdapterHost) {
       return;
     }

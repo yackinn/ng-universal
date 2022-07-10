@@ -1,5 +1,4 @@
 import { Logger }                         from '@nestjs/common';
-import { ngExpressEngine }                from '@nguniversal/express-engine';
 import * as express                       from 'express';
 import 'reflect-metadata';
 import 'zone.js/dist/zone-node';
@@ -28,18 +27,10 @@ export function setupUniversal(
       }
     }
 
-    let engine = ngExpressEngine;
-    let appSsrModule;
-    if (typeof ngOptions.bootstrap === 'function') {
-      const { AppSsrModule, ngExpressEngine } = await ngOptions.bootstrap();
-      appSsrModule                            = AppSsrModule;
-      if (ngExpressEngine) {
-        engine = ngExpressEngine;
-      }
-    }
+    const { AppSsrModule, ngExpressEngine } = await ngOptions.bootstrap();
 
-    engine({
-      bootstrap: appSsrModule || ngOptions.bootstrap,
+    ngExpressEngine({
+      bootstrap: AppSsrModule || ngOptions.bootstrap,
       inlineCriticalCss: ngOptions.inlineCriticalCss,
       providers: [
         {

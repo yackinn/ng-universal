@@ -1,4 +1,3 @@
-import { APP_BASE_HREF }                                      from '@angular/common';
 import { DynamicModule, Inject, Module, OnModuleInit }        from '@nestjs/common';
 import { HttpAdapterHost }                                    from '@nestjs/core';
 import { existsSync }                                         from 'fs';
@@ -61,8 +60,7 @@ export class AngularUniversalModule implements OnModuleInit {
     app.get(this.ngOptions.renderPath, (req, res) => {
       res.render(this.ngOptions.templatePath, {
         req,
-        res,
-        providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }]
+        res
       });
     });
   }

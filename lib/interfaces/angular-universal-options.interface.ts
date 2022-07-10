@@ -1,3 +1,4 @@
+import { ServerResponse }                                     from 'http';
 import { AngularUniversalStorageProvider, CacheKeyGenerator } from './cache-key-generator.interface';
 
 export interface CacheOptions {
@@ -30,7 +31,7 @@ export interface AngularUniversalOptions {
    * The platform level providers for the current render request.
    */
   extraProviders?: any[];
-   /**
+  /**
    * Reduce render blocking requests by inlining critical CSS.
    * Default: true.
    */
@@ -56,5 +57,12 @@ export interface AngularUniversalOptions {
   /**
    * Use a custom endpoint for Angular rendering
    */
-  useCustomRenderEndpoint: boolean
+  useCustomRenderEndpoint: boolean;
+  /**
+   * Set custom headers to static assets responses
+   * @param res
+   * @param path
+   * @param stat
+   */
+  staticAssetsHeaders?: (res: ServerResponse, path: string, stat: any) => any;
 }

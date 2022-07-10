@@ -72,7 +72,8 @@ export function setupUniversal(
   app.get(
     ngOptions.rootStaticPath,
     express.static(ngOptions.viewsPath, {
-      maxAge: 600
+      maxAge: 600,
+      setHeaders: ngOptions.staticAssetsHeaders
     })
   );
 }

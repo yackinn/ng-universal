@@ -1,30 +1,27 @@
 {
     "name": "@ynnck/ng-universal",
-    "version": "6.1.5",
+    "version": "6.1.10",
     "description": "Nest - modern, fast, powerful node.js web framework (@ng-universal)",
     "author": "Kamil Mysliwiec",
     "license": "MIT",
     "scripts": {
         "test:schematics": "jest --run-in-band --silent",
-        "build": "npm run build:lib && npm run build:schematics",
+        "build": "npm run build:lib && npm run build:schematics && cp package.json ./dist",
         "build:lib": "tsc -p tsconfig.json",
         "build:schematics": "tsc -p tsconfig.schematics.json",
         "precommit": "lint-staged",
         "prepublish:npm": "npm run build",
-        "publish:npm": "npm publish --access public",
+        "publish:npm": "cd dist && npm publish --access public",
         "prepublish:next": "npm run build",
         "publish:next": "npm publish --access public --tag next",
-        "build:dev": "npm run prebuild && mkdir ./dist && cp ./lib/package.json ./dist && tsc -p tsconfig.json --watch",
+        "build:dev": "npm run prebuild && mkdir ./dist && tsc -p tsconfig.json --watch",
         "prebuild": "rm -rf dist"
     },
     "peerDependencies": {
-        "@angular/common": "^12.0.0 || ^13.0.0 || ^14.0.0",
-        "@angular/platform-server": "^12.0.0 || ^13.0.0 || ^14.0.0",
         "@nestjs/common": "^8.0.0",
         "@nestjs/core": "^8.0.0",
         "@nestjs/platform-express": "^8.0.0",
-        "@nguniversal/common": "^12.0.0 || ^13.0.0 || ^14.0.0",
-        "@nguniversal/express-engine": "^12.0.0 || ^13.0.0 || ^14.0.0",
+        "@nguniversal/express-engine": "^14.0.0",
         "express": "^4.17.1",
         "zone.js": "^0.11.0"
     },
@@ -53,7 +50,6 @@
     "dependencies": {
         "@angular-devkit/schematics": "14.0.1",
         "@schematics/angular": "14.0.1",
-        "@nguniversal/common": "14.0.0",
         "@nguniversal/express-engine": "14.0.0",
         "memory-cache": "0.2.0"
     },

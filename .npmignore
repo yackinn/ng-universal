@@ -19,3 +19,5 @@ schematics/install/tests
 .DS_Store
 .circleci
 .github
+.idea
+*.md

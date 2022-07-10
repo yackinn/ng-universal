@@ -1,30 +1,47 @@
+import 'reflect-metadata';
+import 'zone.js/dist/zone-node';
 import { Logger } from '@nestjs/common';
 import { ngExpressEngine } from '@nguniversal/express-engine';
 import * as express from 'express';
 import { CacheKeyByOriginalUrlGenerator } from '../cache/cache-key-by-original-url.generator';
-import { InMemoryCacheStorage } from '../cache/in-memory-cache.storage';
 import { AngularUniversalOptions } from '../interfaces/angular-universal-options.interface';
+import { CacheStorage } from '../interfaces/cache-storage.interface';
 
 const DEFAULT_CACHE_EXPIRATION_TIME = 60000; // 60 seconds
 
+export function setupUniversal(
+  app: any,
+  ngOptions: AngularUniversalOptions,
+  ngStorageProvider: CacheStorage
+) {
 const logger = new Logger('AngularUniversalModule');
 
 export function setupUniversal(app: any, ngOptions: AngularUniversalOptions) {
   const cacheOptions = getCacheOptions(ngOptions);
 
-  app.engine('html', (_, options, callback) => {
+  app.engine('html', async (_, options, callback) => {
     let cacheKey;
     if (cacheOptions.isEnabled) {
       const cacheKeyGenerator = cacheOptions.keyGenerator;
-      cacheKey = cacheKeyGenerator.generateCacheKey(options.req);
-      const cacheHtml = cacheOptions.storage.get(cacheKey);
+      cacheKey                = cacheKeyGenerator.generateCacheKey(options.req);
+      const cacheHtml         = await ngStorageProvider.get(cacheKey, options.req);
       if (cacheHtml) {
         return callback(null, cacheHtml);
       }
     }
 
-    ngExpressEngine({
-      bootstrap: ngOptions.bootstrap,
+    let engine = ngExpressEngine;
+    let appSsrModule;
+    if (typeof ngOptions.bootstrap === 'function') {
+      const { AppSsrModule, ngExpressEngine } = await ngOptions.bootstrap();
+      appSsrModule                            = AppSsrModule;
+      if (ngExpressEngine) {
+        engine = ngExpressEngine;
+      }
+    }
+
+    engine({
+      bootstrap: appSsrModule || ngOptions.bootstrap,
       inlineCriticalCss: ngOptions.inlineCriticalCss,
       providers: [
         {
@@ -44,7 +61,7 @@ export function setupUniversal(app: any, ngOptions: AngularUniversalOptions) {
       }
 
       if (cacheOptions.isEnabled && cacheKey) {
-        cacheOptions.storage.set(cacheKey, html, cacheOptions.expiresIn);
+        html = ngStorageProvider.set(cacheKey, html, options.req, cacheOptions.expiresIn) || html;
       }
       callback(null, html);
     });
@@ -71,14 +88,12 @@ export function getCacheOptions(ngOptions: AngularUniversalOptions) {
   if (typeof ngOptions.cache !== 'object') {
     return {
       isEnabled: true,
-      storage: new InMemoryCacheStorage(),
       expiresIn: DEFAULT_CACHE_EXPIRATION_TIME,
       keyGenerator: new CacheKeyByOriginalUrlGenerator()
     };
   }
   return {
     isEnabled: true,
-    storage: ngOptions.cache.storage || new InMemoryCacheStorage(),
     expiresIn: ngOptions.cache.expiresIn || DEFAULT_CACHE_EXPIRATION_TIME,
     keyGenerator:
       ngOptions.cache.keyGenerator || new CacheKeyByOriginalUrlGenerator()

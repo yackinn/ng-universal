@@ -57,7 +57,7 @@ export interface AngularUniversalOptions {
   /**
    * Use a custom endpoint for Angular rendering
    */
-  useCustomRenderEndpoint: boolean;
+  useCustomRenderEndpoint?: boolean;
   /**
    * Set custom headers to static assets responses
    * @param res
